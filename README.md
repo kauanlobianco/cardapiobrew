@@ -92,12 +92,15 @@ cardápio matam a experiência no 3G.
 
 ## Preview automático no feed (estilo YouTube)
 
-`js/componentes/previewFeed.js`. Quando a rolagem para, o card com vídeo mais
-próximo do centro da tela ganha um `<video>` mudo em loop por cima da foto.
-Tocar nele abre o modal **com o mesmo vídeo**, sem novo download.
+`js/componentes/previewFeed.js`. Quando a rolagem para e o usuário permanece
+~0,6 s, a **linha** de cards com vídeo mais próxima do centro da tela (os 2
+lado a lado no celular) ganha `<video>`s mudos em loop por cima das fotos.
+Tocar num deles abre o modal **com o mesmo vídeo**, sem novo download, e os
+outros previews param enquanto o modal está aberto.
 
-- Só existe **um** preview por vez; ao trocar de foco o anterior é pausado,
-  tem o `src` removido e sai do DOM antes de o novo começar a baixar.
+- Só a linha em foco tem vídeo; ao trocar de linha os anteriores são pausados,
+  têm o `src` removido e saem do DOM antes de os novos começarem a baixar.
+  Quem continua na linha em foco não é reiniciado.
 - Só cards com ≥ 60% de área visível concorrem. Um IntersectionObserver
   derruba o preview no instante em que o card sai da tela.
 - Nada toca durante a rolagem — só quando ela para (`scrollend`, com
@@ -105,7 +108,8 @@ Tocar nele abre o modal **com o mesmo vídeo**, sem novo download.
 - Desligado automaticamente com "economia de dados" ligada, em 2G, com
   `prefers-reduced-motion`, e pausado quando a aba sai de foco.
 
-Custo: um vídeo (~700 KB) por parada de rolagem em cima de um card. Se quiser
+Custo: um vídeo (~700 KB) por card da linha em foco a cada parada de rolagem
+(constantes `PERMANENCIA_MS`, `MAXIMO_POR_LINHA` no topo do arquivo). Se quiser
 desligar o recurso, remova a linha `preview.iniciarPreviewFeed(app, porId)` em
 `main.js` — o modal por toque continua funcionando.
 

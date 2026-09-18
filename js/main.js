@@ -35,7 +35,10 @@ app.addEventListener('click', (e) => {
   const alvo = e.target.closest('[data-video]');
   if (!alvo) return;
   const item = porId.get(alvo.dataset.video);
-  if (item) abrirVideo(item, { video: preview.pegar(item.id) });
+  if (!item) return;
+  const doPreview = preview.pegar(item.id); // o vídeo do preview vai para o modal…
+  preview.pararTodos();                     // …e os outros previews param enquanto ele está aberto
+  abrirVideo(item, { video: doPreview });
 });
 
 // começa a baixar o vídeo no toque, antes de o click disparar

@@ -80,11 +80,18 @@ export function abrirVideo(item, opcoes = {}) {
   `);
 
   // reaproveita o <video> do preview do feed ou o pré-aquecido no toque; senão cria agora
-  const video = opcoes.video || (aquecido?.id === item.id ? aquecido.video : criarVideo(item));
-  cancelarPreaquecimento();
+  let video;
+  if (opcoes.video) { video = opcoes.video; cancelarPreaquecimento(); }
+  else if (aquecido?.id === item.id) { video = aquecido.video; aquecido = null; } // não cancelar: é este elemento
+  else { cancelarPreaquecimento(); video = criarVideo(item); }
   dialog.querySelector('.palco').prepend(video);
+  dialog.classList.remove('pronto'); // estado limpo ANTES de decidir se já está pronto
   const marcarPronto = () => dialog.classList.add('pronto');
+  // vídeo vindo do preview/pré-aquecimento já passou por canplay/playing (esses
+  // eventos não se repetem): dispensa o "carregando" na hora
+  if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA || !video.paused) marcarPronto();
   video.addEventListener('playing', marcarPronto, { once: true });
+  video.addEventListener('timeupdate', marcarPronto, { once: true }); // rede de segurança: tempo avançou = está tocando
   // Na rede real o play() de abertura pode acontecer antes de o arquivo chegar
   // e ser ignorado; quando há dados suficientes, tenta de novo.
   video.addEventListener('canplay', () => {
@@ -104,7 +111,6 @@ export function abrirVideo(item, opcoes = {}) {
     if (video.paused) video.play().catch(() => {});
   });
 
-  dialog.classList.remove('pronto');
   // pushState ANTES de travar o scroll: o navegador guarda a posição atual
   // na entrada anterior do histórico, e queremos que seja a posição real.
   history.pushState({ videoAberto: item.id }, '');
