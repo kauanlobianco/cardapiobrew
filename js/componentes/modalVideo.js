@@ -52,7 +52,12 @@ export function abrirVideo(item) {
   const video = dialog.querySelector('video');
   const marcarPronto = () => dialog.classList.add('pronto');
   video.addEventListener('playing', marcarPronto, { once: true });
-  video.addEventListener('canplay', marcarPronto, { once: true });
+  // Na rede real o play() de abertura pode acontecer antes de o arquivo chegar
+  // e ser ignorado; quando há dados suficientes, tenta de novo.
+  video.addEventListener('canplay', () => {
+    marcarPronto();
+    if (video.paused) video.play().catch(() => {});
+  }, { once: true });
   video.addEventListener('error', () => {
     dialog.classList.add('pronto');
     dialog.querySelector('.carregando').textContent = 'Não foi possível carregar o vídeo.';
