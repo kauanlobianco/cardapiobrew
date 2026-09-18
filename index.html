@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cardápio · Brew Bar·B·Q Pub</title>
+  <meta name="description" content="Cardápio digital do Brew Bar·B·Q Pub, Nova Friburgo. Toque na foto para ver o prato em vídeo.">
+  <meta name="theme-color" content="#17130F">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="media/logo.webp" type="image/webp">
+  <link rel="apple-touch-icon" href="media/logo.webp">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bevan&family=Archivo:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/estilo.css">
+
+  <!-- evita a cascata de imports: o navegador já baixa os módulos em paralelo -->
+  <link rel="modulepreload" href="js/dados/cardapio.js">
+  <link rel="modulepreload" href="js/dados/midia.js">
+  <link rel="modulepreload" href="js/util/dom.js">
+  <link rel="modulepreload" href="js/util/formato.js">
+  <link rel="modulepreload" href="js/componentes/cabecalho.js">
+  <link rel="modulepreload" href="js/componentes/navegacao.js">
+  <link rel="modulepreload" href="js/componentes/destaques.js">
+  <link rel="modulepreload" href="js/componentes/categoria.js">
+  <link rel="modulepreload" href="js/componentes/item.js">
+  <link rel="modulepreload" href="js/componentes/modalVideo.js">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <div id="app" class="app">
+    <noscript>
+      <p class="aviso">Este cardápio precisa de JavaScript para funcionar. Chame o garçom e peça o cardápio impresso.</p>
+    </noscript>
+  </div>
+  <dialog id="modal-video" class="modal" aria-label="Vídeo do prato"></dialog>
+</body>
+</html>
