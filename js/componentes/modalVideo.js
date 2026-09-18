@@ -14,6 +14,37 @@ const ICONE_SOM = html`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden=
 
 let dialog, scrollSalvo = 0, abertoPorHistorico = false;
 
+// Pré-aquecimento: no celular o `click` só dispara quando o dedo solta, ~100 ms
+// depois do `pointerdown`. Criamos o <video> (e começamos o download) já no
+// toque; abrirVideo() reaproveita o elemento. Só um por vez, para não baixar
+// vídeos em paralelo à toa.
+let aquecido = null; // { id, video }
+
+function criarVideo(item) {
+  const m = midiaDe(item);
+  const video = document.createElement('video');
+  video.playsInline = true; video.muted = true; video.loop = true; video.autoplay = true;
+  video.preload = 'auto';
+  video.setAttribute('playsinline', ''); video.setAttribute('muted', '');
+  video.setAttribute('aria-label', `Vídeo: ${item.nome}`);
+  if (m.foto) video.poster = caminhoFoto(m.id);
+  video.src = caminhoVideo(m.id);
+  return video;
+}
+
+export function preaquecer(item) {
+  if (!midiaDe(item).video || aquecido?.id === item.id) return;
+  cancelarPreaquecimento();
+  aquecido = { id: item.id, video: criarVideo(item) };
+}
+
+// O toque virou rolagem (pointercancel): não gasta dados com um vídeo que não vai abrir.
+export function cancelarPreaquecimento() {
+  if (!aquecido) return;
+  aquecido.video.removeAttribute('src'); aquecido.video.load();
+  aquecido = null;
+}
+
 function travarScroll() {
   scrollSalvo = window.scrollY;
   Object.assign(document.body.style, { position: 'fixed', top: `-${scrollSalvo}px`, left: '0', right: '0', width: '100%' });
@@ -41,15 +72,16 @@ export function abrirVideo(item) {
   montar(dialog, html`
     <button type="button" class="fechar" data-fechar aria-label="Fechar vídeo">${ICONE_X}</button>
     <div class="palco">
-      <video playsinline muted autoplay loop preload="auto"
-        poster="${m.foto ? caminhoFoto(m.id) : ''}" src="${caminhoVideo(m.id)}" aria-label="Vídeo: ${item.nome}"></video>
       <div class="carregando" aria-hidden="true"></div>
       <button type="button" class="som" data-som aria-pressed="false">${ICONE_MUDO}<span>Ligar som</span></button>
     </div>
     ${ficha(item)}
   `);
 
-  const video = dialog.querySelector('video');
+  // usa o <video> pré-aquecido no toque, se for deste item; senão cria agora
+  const video = aquecido?.id === item.id ? aquecido.video : criarVideo(item);
+  aquecido = null;
+  dialog.querySelector('.palco').prepend(video);
   const marcarPronto = () => dialog.classList.add('pronto');
   video.addEventListener('playing', marcarPronto, { once: true });
   // Na rede real o play() de abertura pode acontecer antes de o arquivo chegar

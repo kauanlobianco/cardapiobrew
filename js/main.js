@@ -4,7 +4,7 @@ import { cabecalho, rodape } from './componentes/cabecalho.js';
 import { navegacao, ativarScrollSpy } from './componentes/navegacao.js';
 import { destaques } from './componentes/destaques.js';
 import { categoria } from './componentes/categoria.js';
-import { abrirVideo, iniciarModal } from './componentes/modalVideo.js';
+import { abrirVideo, preaquecer, cancelarPreaquecimento, iniciarModal } from './componentes/modalVideo.js';
 
 // índice id -> item (inclui as capas de categoria como pseudo-itens)
 const porId = new Map();
@@ -34,3 +34,12 @@ app.addEventListener('click', (e) => {
   const item = porId.get(alvo.dataset.video);
   if (item) abrirVideo(item);
 });
+
+// começa a baixar o vídeo no toque, antes de o click disparar
+app.addEventListener('pointerdown', (e) => {
+  const alvo = e.target.closest('[data-video]');
+  if (!alvo) return;
+  const item = porId.get(alvo.dataset.video);
+  if (item) preaquecer(item);
+}, { passive: true });
+app.addEventListener('pointercancel', cancelarPreaquecimento, { passive: true });
