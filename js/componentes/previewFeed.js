@@ -22,12 +22,31 @@ const MAXIMO_POR_LINHA = 4;     // 2 no celular, 3-4 em tablet/desktop
 
 let porId, candidatos = [], atuais = []; // atuais = [{ id, botao, video }]
 let observador, timer;
+let bloqueado = false; // o navegador recusou autoplay (ex.: iOS em Modo de Baixa Energia)
 
-function desligado() {
+// Por que o preview não roda agora? null = pode rodar.
+function motivoDesligado() {
   const c = navigator.connection;
-  if (c?.saveData) return true;
-  if (c?.effectiveType && /2g/.test(c.effectiveType)) return true;
-  return matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (c?.saveData) return 'economia de dados ligada no aparelho';
+  if (c?.effectiveType && /2g/.test(c.effectiveType)) return `conexão ${c.effectiveType}`;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return '"reduzir movimento" ligado no aparelho';
+  if (bloqueado) return 'navegador recusou autoplay (modo de baixa energia?)';
+  return null;
+}
+const desligado = () => motivoDesligado() !== null;
+
+// Modo diagnóstico: ?debug na URL mostra na tela o estado do preview.
+const DEBUG = /[?&]debug/.test(location.search);
+let painel;
+function diag(texto) {
+  if (!DEBUG) return;
+  if (!painel) {
+    painel = document.createElement('div');
+    painel.id = 'preview-debug';
+    painel.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99;max-width:80vw;padding:6px 10px;border-radius:8px;background:#000c;color:#f2e9d8;font:12px/1.3 monospace;pointer-events:none;white-space:pre-wrap';
+    document.body.appendChild(painel);
+  }
+  painel.textContent = `preview: ${texto}`;
 }
 
 function destruir(p) {
@@ -45,8 +64,12 @@ function iniciar(botao) {
   botao.appendChild(video);
   const p = { id: item.id, botao, video };
   atuais.push(p);
-  video.play().catch(() => {});
-  video.addEventListener('canplay', () => { if (atuais.includes(p) && video.paused) video.play().catch(() => {}); }, { once: true });
+  const tentar = () => video.play().catch((e) => {
+    // NotAllowedError = política de autoplay (iOS Baixa Energia, etc.): não insiste, não gasta dados
+    if (e?.name === 'NotAllowedError') { bloqueado = true; pararTodos(); diag(motivoDesligado()); }
+  });
+  tentar();
+  video.addEventListener('canplay', () => { if (atuais.includes(p) && video.paused) tentar(); }, { once: true });
 }
 
 // Fração do elemento dentro da janela (vertical e horizontal — a faixa de
@@ -78,9 +101,11 @@ function escolherLinha() {
 }
 
 export function atualizar() {
-  if (desligado() || document.hidden || document.querySelector('dialog[open]')) return;
+  const motivo = motivoDesligado() || (document.hidden && 'aba em segundo plano') || (document.querySelector('dialog[open]') && 'modal aberto');
+  if (motivo) { diag(motivo); return; }
   const linha = escolherLinha();
-  if (!linha.length) { pararTodos(); return; }
+  if (!linha.length) { pararTodos(); diag('nenhum card com vídeo ≥60% visível'); return; }
+  diag('tocando ' + linha.map((b) => b.dataset.video).join(' + '));
   // derruba quem saiu da linha em foco; mantém quem continua (sem reiniciar)
   const ficam = atuais.filter((p) => linha.includes(p.botao));
   atuais.filter((p) => !linha.includes(p.botao)).forEach(destruir);
@@ -108,7 +133,9 @@ export const tem = (id) => atuais.some((p) => p.id === id);
 
 export function iniciarPreviewFeed(raiz, indice) {
   porId = indice;
-  if (desligado() || !('IntersectionObserver' in window)) return;
+  if (!('IntersectionObserver' in window)) { diag('navegador sem IntersectionObserver'); return; }
+  if (desligado()) { diag(motivoDesligado()); return; }
+  diag('iniciado; role a página');
 
   candidatos = [...raiz.querySelectorAll('.foto[data-video], .capa[data-video]')];
 
