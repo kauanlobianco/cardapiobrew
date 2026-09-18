@@ -20,17 +20,21 @@ let dialog, scrollSalvo = 0, abertoPorHistorico = false;
 // vídeos em paralelo à toa.
 let aquecido = null; // { id, video }
 
-export function criarVideo(item) {
+// Prepara um <video> (novo ou reaproveitado) para o item: mudo, inline, em loop,
+// sem AirPlay/PiP, poster = foto do card. Atributos E propriedades, porque o
+// WebKit olha o atributo `muted` para decidir o autoplay.
+export function configurarVideo(video, item) {
   const m = midiaDe(item);
-  const video = document.createElement('video');
   video.playsInline = true; video.muted = true; video.loop = true; video.autoplay = true;
   video.preload = 'auto';
-  video.setAttribute('playsinline', ''); video.setAttribute('muted', '');
+  video.disableRemotePlayback = true; video.disablePictureInPicture = true;
+  video.setAttribute('playsinline', ''); video.setAttribute('webkit-playsinline', ''); video.setAttribute('muted', '');
   video.setAttribute('aria-label', `Vídeo: ${item.nome}`);
-  if (m.foto) video.poster = caminhoFoto(m.id);
+  if (m.foto) video.poster = caminhoFoto(m.id); else video.removeAttribute('poster');
   video.src = caminhoVideo(m.id);
   return video;
 }
+export const criarVideo = (item) => configurarVideo(document.createElement('video'), item);
 
 export function preaquecer(item) {
   if (!midiaDe(item).video || aquecido?.id === item.id) return;
@@ -129,7 +133,7 @@ function fechar({ viaHistorico = false } = {}) {
   destravarScroll();
   if (!viaHistorico && abertoPorHistorico) { abertoPorHistorico = false; history.back(); }
   abertoPorHistorico = false;
-  fecharCallback?.();
+  fecharCallback?.(video); // o elemento volta para o pool do preview (já destravado no iOS)
 }
 let fecharCallback;
 

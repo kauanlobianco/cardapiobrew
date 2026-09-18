@@ -26,7 +26,9 @@ montar(app, html`
 `);
 
 // ao fechar o modal, o feed volta a dar preview no card centralizado
-iniciarModal(document.getElementById('modal-video'), { aoFechar: () => setTimeout(preview.atualizar, 250) });
+iniciarModal(document.getElementById('modal-video'), {
+  aoFechar: (video) => { preview.devolver(video); setTimeout(preview.atualizar, 250); },
+});
 ativarScrollSpy(app.querySelector('.nav'), categorias);
 preview.iniciarPreviewFeed(app, porId);
 
