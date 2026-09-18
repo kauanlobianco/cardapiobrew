@@ -90,6 +90,25 @@ Vídeo novo precisa passar antes pela otimização (480p, H.264, ~500 kbps,
 `faststart`) — o comando está no histórico do projeto; vídeos de 5 MB no
 cardápio matam a experiência no 3G.
 
+## Preview automático no feed (estilo YouTube)
+
+`js/componentes/previewFeed.js`. Quando a rolagem para, o card com vídeo mais
+próximo do centro da tela ganha um `<video>` mudo em loop por cima da foto.
+Tocar nele abre o modal **com o mesmo vídeo**, sem novo download.
+
+- Só existe **um** preview por vez; ao trocar de foco o anterior é pausado,
+  tem o `src` removido e sai do DOM antes de o novo começar a baixar.
+- Só cards com ≥ 60% de área visível concorrem. Um IntersectionObserver
+  derruba o preview no instante em que o card sai da tela.
+- Nada toca durante a rolagem — só quando ela para (`scrollend`, com
+  fallback de 180 ms para navegadores sem o evento).
+- Desligado automaticamente com "economia de dados" ligada, em 2G, com
+  `prefers-reduced-motion`, e pausado quando a aba sai de foco.
+
+Custo: um vídeo (~700 KB) por parada de rolagem em cima de um card. Se quiser
+desligar o recurso, remova a linha `preview.iniciarPreviewFeed(app, porId)` em
+`main.js` — o modal por toque continua funcionando.
+
 ## Como funciona o carregamento
 
 - Fotos: `loading="lazy"` em todas menos as primeiras 4–6 (que estão na tela ao abrir).

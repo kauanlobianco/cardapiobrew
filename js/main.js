@@ -5,6 +5,7 @@ import { navegacao, ativarScrollSpy } from './componentes/navegacao.js';
 import { destaques } from './componentes/destaques.js';
 import { categoria } from './componentes/categoria.js';
 import { abrirVideo, preaquecer, cancelarPreaquecimento, iniciarModal } from './componentes/modalVideo.js';
+import * as preview from './componentes/previewFeed.js';
 
 // índice id -> item (inclui as capas de categoria como pseudo-itens)
 const porId = new Map();
@@ -24,22 +25,25 @@ montar(app, html`
   ${rodape(restaurante)}
 `);
 
-iniciarModal(document.getElementById('modal-video'));
+// ao fechar o modal, o feed volta a dar preview no card centralizado
+iniciarModal(document.getElementById('modal-video'), { aoFechar: () => setTimeout(preview.atualizar, 250) });
 ativarScrollSpy(app.querySelector('.nav'), categorias);
+preview.iniciarPreviewFeed(app, porId);
 
 // um único listener para todos os cards/capas
 app.addEventListener('click', (e) => {
   const alvo = e.target.closest('[data-video]');
   if (!alvo) return;
   const item = porId.get(alvo.dataset.video);
-  if (item) abrirVideo(item);
+  if (item) abrirVideo(item, { video: preview.pegar(item.id) });
 });
 
 // começa a baixar o vídeo no toque, antes de o click disparar
+// (se o card já está em preview, o vídeo já existe — nada a fazer)
 app.addEventListener('pointerdown', (e) => {
   const alvo = e.target.closest('[data-video]');
   if (!alvo) return;
   const item = porId.get(alvo.dataset.video);
-  if (item) preaquecer(item);
+  if (item && !preview.tem(item.id)) preaquecer(item);
 }, { passive: true });
 app.addEventListener('pointercancel', cancelarPreaquecimento, { passive: true });

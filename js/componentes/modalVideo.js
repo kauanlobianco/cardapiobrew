@@ -20,7 +20,7 @@ let dialog, scrollSalvo = 0, abertoPorHistorico = false;
 // vídeos em paralelo à toa.
 let aquecido = null; // { id, video }
 
-function criarVideo(item) {
+export function criarVideo(item) {
   const m = midiaDe(item);
   const video = document.createElement('video');
   video.playsInline = true; video.muted = true; video.loop = true; video.autoplay = true;
@@ -64,7 +64,8 @@ function ficha(item) {
   </div>`;
 }
 
-export function abrirVideo(item) {
+// opcoes.video: um <video> já existente (o preview do feed), para não baixar de novo
+export function abrirVideo(item, opcoes = {}) {
   if (!dialog) return;
   const m = midiaDe(item);
   if (!m.video) return;
@@ -78,9 +79,9 @@ export function abrirVideo(item) {
     ${ficha(item)}
   `);
 
-  // usa o <video> pré-aquecido no toque, se for deste item; senão cria agora
-  const video = aquecido?.id === item.id ? aquecido.video : criarVideo(item);
-  aquecido = null;
+  // reaproveita o <video> do preview do feed ou o pré-aquecido no toque; senão cria agora
+  const video = opcoes.video || (aquecido?.id === item.id ? aquecido.video : criarVideo(item));
+  cancelarPreaquecimento();
   dialog.querySelector('.palco').prepend(video);
   const marcarPronto = () => dialog.classList.add('pronto');
   video.addEventListener('playing', marcarPronto, { once: true });
@@ -122,10 +123,13 @@ function fechar({ viaHistorico = false } = {}) {
   destravarScroll();
   if (!viaHistorico && abertoPorHistorico) { abertoPorHistorico = false; history.back(); }
   abertoPorHistorico = false;
+  fecharCallback?.();
 }
+let fecharCallback;
 
-export function iniciarModal(el) {
+export function iniciarModal(el, { aoFechar } = {}) {
   dialog = el;
+  fecharCallback = aoFechar;
   // a posição do scroll é restaurada por nós (destravarScroll), não pelo navegador
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   dialog.addEventListener('click', (e) => {
