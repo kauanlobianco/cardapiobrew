@@ -30,8 +30,9 @@ const secoes = [
   },
   {
     nome: 'Acompanhamentos',
-    grupos: [{ itens: itens(['fries', 'rock-fries', 'arroz-a-piamontese',
-      { id: 'arroz-farofa-molho-campanha', nome: 'Arroz / Farofa / Molho à Campanha' }]) }],
+    grupos: [{ itens: itens(['fries', 'rock-fries', 'arroz-a-piamontese', 'arroz-branco',
+      { id: 'farofa', nome: 'Farofa' },
+      { id: 'molho-a-campanha', nome: 'Molho à Campanha' }]) }],
   },
 ];
 

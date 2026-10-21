@@ -1,6 +1,7 @@
 // GERADO por ferramentas/preparar-midia.ps1 - nao edite a mao.
 // id -> { foto, video } disponiveis em media/.
 export const midia = {
+  'aipim': { foto: true, video: false },
   'altos-del-plata-malbec': { foto: true, video: false },
   'arroz-a-piamontese': { foto: true, video: true },
   'arroz-com-brocolis-e-alho-torrado': { foto: true, video: true },
@@ -33,6 +34,7 @@ export const midia = {
   'da-pipa-colheita': { foto: true, video: false },
   'double-cheese-smash-burger': { foto: true, video: false },
   'drinks': { foto: true, video: true },
+  'farofa': { foto: true, video: false },
   'farofa-de-bacon': { foto: true, video: true },
   'farofa-de-banana': { foto: true, video: false },
   'farofa-de-ovos': { foto: true, video: false },
@@ -41,6 +43,7 @@ export const midia = {
   'fish-and-chips': { foto: true, video: true },
   'fish-fillet': { foto: true, video: true },
   'fraldinha-red': { foto: true, video: true },
+  'fries': { foto: true, video: false },
   'garlic-mashed-potato': { foto: true, video: true },
   'garlic-onion-smash-burger': { foto: true, video: false },
   'german-balls': { foto: true, video: true },
