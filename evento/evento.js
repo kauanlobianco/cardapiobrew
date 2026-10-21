@@ -19,7 +19,8 @@ const cat = (id) => categorias.find((c) => c.id === id);
 
 // O que entra no evento
 const secoes = [
-  { nome: 'Entradas e Petiscos', grupos: [{ itens: cat('entradas-e-petiscos').grupos[0].itens }] },
+  { nome: 'Entradas e Petiscos', grupos: [{ itens: cat('entradas-e-petiscos').grupos[0].itens
+    .filter((i) => i.id !== 'provolone-sticks') }] },
   {
     nome: 'Carnes',
     grupos: [
