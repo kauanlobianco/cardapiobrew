@@ -32,9 +32,10 @@ const secoes = [
   {
     nome: 'Acompanhamentos',
     grupos: [{ itens: itens(['fries', 'rock-fries', 'arroz-a-piamontese', 'arroz-branco',
-      { id: 'farofa', nome: 'Farofa' },
-      { id: 'molho-a-campanha', nome: 'Molho à Campanha' }]) }],
+      { id: 'farofa', nome: 'Farofa' }, 'vinagrete-tradicional']) }],
   },
+  { nome: 'Brew Burgers', grupos: cat('brew-burgers').grupos },
+  { nome: 'Baguetes', grupos: cat('baguetes').grupos },
 ];
 
 const nota = (item) => item.nota ? html` <span class="nota">${item.nota}</span>` : '';
