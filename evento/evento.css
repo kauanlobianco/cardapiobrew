@@ -1,0 +1,37 @@
+/* Ajustes do cardápio digital para impressão em A4 (PDF). */
+
+@page { size: A4; margin: 12mm 0; background: #17130F; }
+html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.app { max-width: none; width: 210mm; padding: 0 12mm; }
+
+.topo { padding: 4mm 0 4mm; }
+.topo .logo { width: 150px; }
+.topo h1 { font-size: 30px; }
+.topo .evento { margin-top: 12px; }
+.topo .evento .rotulo { font-size: 17px; padding: 10px 20px 8px; }
+.topo .boas-vindas { font-size: 14px; max-width: 46ch; }
+
+.secao { padding: 18px 0 4px; }
+.secao > header { margin-bottom: 10px; break-after: avoid; }
+.secao + .secao { break-before: page; padding-top: 4mm; } /* folga para o rótulo girado não vazar na página anterior */
+.grupo > h3 { font-size: 15px; break-after: avoid; }
+
+.grade, .grade { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.card { break-inside: avoid; }
+.card .foto::after { display: none; }
+.card .corpo { padding: 10px 12px 12px; }
+.card .nome { font-size: 14px; }
+/* descrição completa, sem corte */
+.card .desc { display: block; -webkit-line-clamp: none; overflow: visible; font-size: 12.5px; }
+
+.lista { break-inside: avoid; }
+.linha { break-inside: avoid; }
+.linha .nome { font-size: 14.5px; }
+
+.rodape { padding: 30px 0 0; break-inside: avoid; }
+.rodape .qr { margin-top: 14px; }
+.rodape b { color: var(--creme); }
+
+/* a textura de ruído vira imagem enorme no PDF; no papel ela não aparece */
+body::before { display: none; }
