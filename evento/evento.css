@@ -1,6 +1,6 @@
 /* Ajustes do cardápio digital para impressão em A4 (PDF). */
 
-@page { size: A4; margin: 12mm 0; background: #17130F; }
+@page { size: A4; margin: 10mm 0; background: #17130F; }
 html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
 .app { max-width: none; width: 210mm; padding: 0 12mm; }
@@ -16,16 +16,17 @@ html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .secao > header { margin-bottom: 10px; break-after: avoid; }
 .secao + .secao { break-before: page; padding-top: 4mm; } /* folga para o rótulo girado não vazar na página anterior */
 .grupo > h3 { font-size: 15px; break-after: avoid; }
+.grupo + .grupo { margin-top: 10px; }
 
 .grade, .grade { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .card { break-inside: avoid; }
+.card .foto { aspect-ratio: 16 / 10; } /* mais baixa que no celular: cabe uma linha a mais por página */
 .card .foto::after { display: none; }
 .card .corpo { padding: 10px 12px 12px; }
 .card .nome { font-size: 14px; }
 /* descrição completa, sem corte */
-.card .desc { display: block; -webkit-line-clamp: none; overflow: visible; font-size: 12.5px; }
+.card .desc { display: block; -webkit-line-clamp: none; overflow: visible; font-size: 12.5px; line-height: 1.3; }
 
-.lista { break-inside: avoid; }
 .linha { break-inside: avoid; }
 .linha .nome { font-size: 14.5px; }
 

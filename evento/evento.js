@@ -1,12 +1,12 @@
 // Cardápio de evento — versão para impressão (PDF A4), montada a partir dos
 // mesmos dados do cardápio digital. Só fotos: sem botão play e sem vídeo.
-// Preços ficam ocultos; abra com ?precos para exibi-los.
+// Com preços; abra com ?sem-precos para ocultá-los.
 import { restaurante, categorias } from '../js/dados/cardapio.js';
 import { html, montar } from '../js/util/dom.js';
-import { caminhoFoto } from '../js/util/formato.js';
+import { caminhoFoto, formatarPreco } from '../js/util/formato.js';
 import { midiaDe, precos, sabores } from '../js/componentes/item.js';
 
-const comPrecos = new URLSearchParams(location.search).has('precos');
+const comPrecos = !new URLSearchParams(location.search).has('sem-precos');
 
 const porId = {};
 for (const c of categorias) for (const g of c.grupos) for (const i of g.itens) porId[i.id] = i;
@@ -49,11 +49,18 @@ const cartao = (item) => html`<article class="card">
   </div>
 </article>`;
 
-const linha = (item) => html`<li class="linha">
-  <div class="cabeca"><span class="nome">${item.nome}</span>${nota(item)}</div>
-  ${item.desc ? html`<p class="desc">${item.desc}</p>` : ''}
-  ${valores(item)}
-</li>`;
+// preço único fica na mesma linha do nome, com pontilhado (como no site)
+const linha = (item) => {
+  const unico = comPrecos && item.preco != null && !item.precos;
+  return html`<li class="linha">
+    <div class="cabeca">
+      <span class="nome">${item.nome}</span>${nota(item)}
+      ${unico ? html`<span class="pontos"></span><span class="valor"><small>R$</small>${formatarPreco(item.preco)}</span>` : ''}
+    </div>
+    ${item.desc ? html`<p class="desc">${item.desc}</p>` : ''}
+    ${unico ? '' : valores(item)}
+  </li>`;
+};
 
 function grupo(g) {
   const comFoto = g.itens.filter((i) => midiaDe(i).foto);
