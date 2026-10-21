@@ -32,7 +32,7 @@ const secoes = [
   {
     nome: 'Acompanhamentos',
     grupos: [{ itens: itens(['fries', 'rock-fries', 'arroz-a-piamontese', 'arroz-branco',
-      { id: 'farofa', nome: 'Farofa' }, 'vinagrete-tradicional']) }],
+      { id: 'farofa', nome: 'Farofa', preco: 25 }, 'vinagrete-tradicional']) }],
   },
   { nome: 'Brew Burgers', grupos: cat('brew-burgers').grupos },
   { nome: 'Baguetes', grupos: cat('baguetes').grupos },
