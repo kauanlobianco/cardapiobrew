@@ -31,7 +31,8 @@ const secoes = [
   },
   {
     nome: 'Acompanhamentos',
-    grupos: [{ itens: itens(['fries', 'rock-fries', 'arroz-a-piamontese', 'arroz-branco',
+    grupos: [{ itens: itens(['fries', 'rock-fries', 'aipim', 'arroz-a-piamontese', 'arroz-com-brocolis-e-alho-torrado',
+      'arroz-branco',
       { id: 'farofa', nome: 'Farofa', preco: 25 }, 'vinagrete-tradicional']) }],
   },
   { nome: 'Brew Burgers', grupos: cat('brew-burgers').grupos },
