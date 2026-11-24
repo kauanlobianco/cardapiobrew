@@ -29,9 +29,7 @@ e abra <http://localhost:8080>. (Ou `npx serve`, `python -m http.server`, Live S
 | **Cloudflare Pages** | "Upload assets" → envie a pasta |
 | **GitHub Pages** | commit da pasta e ative Pages apontando para ela |
 
-Aponte o QR Code para a URL final. O `index.html` tem `noindex` para o cardápio
-não aparecer no Google enquanto estiver em teste — tire a linha `<meta name="robots">`
-quando for pra valer.
+Aponte o QR Code para a URL final. O site é público e indexável pelo Google.
 
 Os vídeos já vêm com `faststart`, então começam a tocar antes de terminar o download.
 
