@@ -88,6 +88,23 @@ Vídeo novo precisa passar antes pela otimização (480p, H.264, ~500 kbps,
 `faststart`) — o comando está no histórico do projeto; vídeos de 5 MB no
 cardápio matam a experiência no 3G.
 
+## Carta de vinhos (`/vinhos/`)
+
+Página própria, com visual mais sóbrio (Cormorant Garamond, fios dourados),
+para ter **QR Code só da carta de vinhos**:
+<https://cardapiobrew.vercel.app/vinhos/> — QR pronto em `media/qr-vinhos.png`
+(e `.svg` para impressão em qualquer tamanho).
+
+- Os vinhos vêm da mesma categoria `adega-brew` de `js/dados/cardapio.js`:
+  editou lá, muda no cardápio e na carta.
+- `selecao: [ids]` na categoria define a vitrine "Seleção Portugal" no topo.
+- Tocar num vinho abre a ficha (garrafa grande, uvas, região, preço).
+- No cardápio principal, a seção Adega Brew abre com um convite para a carta.
+- Arquivos: `vinhos/index.html`, `js/vinhos.js`, `css/vinhos.css`.
+- Garrafas novas: PNG/JPG recortado com fundo transparente, ~900 px de altura,
+  salvo como `media/fotos/<id>.webp` (o `preparar-midia.ps1` mantém no
+  `midia.js` fotos que já estão em `media/fotos`, mesmo sem original no mapa).
+
 ## Preview automático no feed (estilo YouTube)
 
 `js/componentes/previewFeed.js`. Quando a rolagem para e o usuário permanece

@@ -34,6 +34,19 @@ function grupo(g, { eagerRestante, vinhos = false }) {
   </div>`;
 }
 
+// Convite para a carta de vinhos dedicada (/vinhos/): garrafas da seleção em leque.
+function convite(cat) {
+  const garrafas = (cat.selecao || []).slice(0, 3);
+  return html`<a class="convite-carta" href="${cat.carta}">
+    <span class="garrafas" aria-hidden="true">${garrafas.map((id) => html`<img src="${caminhoFoto(id)}" alt="" width="60" height="220" loading="lazy" decoding="async">`)}</span>
+    <span class="texto">
+      <span class="sobre">Adega Brew</span>
+      <span class="titulo">Carta de <em>Vinhos</em></span>
+      <span class="chamada">Fichas completas e novidades de Portugal →</span>
+    </span>
+  </a>`;
+}
+
 // eagerRestante: contador compartilhado — as primeiras N fotos da página
 // carregam sem lazy (estão acima da dobra); o resto espera o scroll.
 export function categoria(cat, { eagerRestante = { n: 0 } } = {}) {
@@ -43,6 +56,7 @@ export function categoria(cat, { eagerRestante = { n: 0 } } = {}) {
       <h2 class="rotulo" id="t-${cat.id}">${cat.nome}</h2><span class="contagem">${total} ${total === 1 ? 'item' : 'itens'}</span>
     </header>
     ${cat.capa ? capa(cat) : ''}
+    ${cat.carta ? convite(cat) : ''}
     ${cat.grupos.map((g) => grupo(g, { eagerRestante, vinhos: !!cat.vinhos }))}
   </section>`;
 }

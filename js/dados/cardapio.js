@@ -359,10 +359,14 @@ export const categorias = [
 
   // Carta de vinhos — conteúdo da página https://j8v9slc8.mule.page/ (set/2026).
   // `vinhos: true` → cada item vira uma linha com a miniatura da garrafa.
+  // A mesma lista monta a carta de vinhos dedicada em /vinhos/ (QR próprio).
+  // `selecao` → ids em destaque no topo da carta (vitrine "Seleção Portugal").
   {
     id: 'adega-brew',
     nome: 'Adega Brew',
     vinhos: true,
+    carta: 'vinhos/',
+    selecao: ['vale-de-escadas-altitude-reserva', 'cabriz-escolha', 'ea-cartuxa'],
     grupos: [
       { nome: 'Espumantes', nota: 'Brasil · Serra Gaúcha', itens: [
         { id: 'casa-perini-brut', nome: 'Casa Perini Brut', pais: 'BR', preco: 110,
@@ -453,6 +457,15 @@ export const categorias = [
         { id: 'vale-de-escadas-reserva', nome: 'Vale de Escadas Reserva', pais: 'PT', preco: 180,
           detalhes: { uvas: 'Touriga Nacional, Touriga Franca & Tinta Roriz', pais: 'Portugal', regiao: 'Douro', teor: '14%' },
           desc: 'Elegante, intenso e complexo.' },
+        { id: 'vale-de-escadas-altitude-reserva', nome: 'Vale de Escadas Altitude Reserva', pais: 'PT', preco: 140,
+          detalhes: { uvas: 'Touriga Nacional, Touriga Franca & Tinta Roriz', pais: 'Portugal', regiao: 'Douro' },
+          desc: 'Vinhas de altitude no Douro: fruta negra madura, frescor e taninos firmes.' },
+        { id: 'cabriz-escolha', nome: 'Cabriz Escolha', pais: 'PT', preco: 150,
+          detalhes: { uvas: 'Touriga Nacional, Alfrocheiro & Tinta Roriz', pais: 'Portugal', regiao: 'Dão DOC' },
+          desc: 'Clássico do Dão: elegante e fresco, com fruta vermelha e notas florais.' },
+        { id: 'ea-cartuxa', nome: 'EA Cartuxa', pais: 'PT', preco: 140,
+          detalhes: { uvas: 'Aragonez & Trincadeira', pais: 'Portugal', regiao: 'Alentejo' },
+          desc: 'Da Fundação Eugénio de Almeida (Cartuxa): macio, frutado e muito gastronômico.' },
       ] },
       { nome: 'Tintos', nota: 'Espanha', itens: [
         { id: 'pata-negra-tempranillo', nome: 'Pata Negra Tempranillo', pais: 'ES', preco: 99,

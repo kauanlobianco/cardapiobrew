@@ -224,6 +224,23 @@ ul { list-style: none; }
 .detalhes b { color: var(--areia); font-weight: 600; }
 .bandeira { font-size: 14px; margin-left: 5px; opacity: .85; } /* em desktop Windows aparece como "PT"; no celular, a bandeira */
 
+/* convite para a carta de vinhos dedicada (/vinhos/) */
+.convite-carta {
+  display: flex; align-items: center; gap: 16px; margin: 4px 0 18px; padding: 16px 18px 14px;
+  text-decoration: none; border-radius: var(--raio);
+  background: radial-gradient(120% 140% at 0% 100%, rgba(120, 30, 45, .55), transparent 60%), var(--fumaca);
+  border: 1px solid rgba(201, 164, 92, .35);
+}
+.convite-carta .garrafas { flex: 0 0 auto; display: flex; align-items: flex-end; height: 92px; }
+.convite-carta .garrafas img { height: 92px; width: auto; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .6)); }
+.convite-carta .garrafas img + img { margin-left: -6px; }
+.convite-carta .garrafas img:nth-child(2) { height: 102px; position: relative; z-index: 1; }
+.convite-carta .texto { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.convite-carta .sobre { font-size: 10px; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; color: #C9A45C; }
+.convite-carta .titulo { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 27px; font-weight: 500; line-height: 1.05; }
+.convite-carta .titulo em { color: #C9A45C; }
+.convite-carta .chamada { font-size: 12.5px; color: var(--areia); margin-top: 3px; }
+
 /* ------------------------------------------------------------ destaques (Best BBQ) */
 
 .destaques { padding: 22px 0 4px; }

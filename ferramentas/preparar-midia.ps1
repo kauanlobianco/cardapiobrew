@@ -67,6 +67,12 @@ foreach ($p in $mapa.videos.PSObject.Properties) {
     Marcar $id 'video'
 }
 
+# ---- fotos que ja estao em media/fotos sem original no mapa (ex.: garrafas
+#      recortadas e colocadas direto la) continuam valendo no midia.js
+foreach ($arq in Get-ChildItem $dirFotos -Filter *.webp -File) {
+    if (-not $midia.ContainsKey($arq.BaseName) -or -not $midia[$arq.BaseName].foto) { Marcar $arq.BaseName 'foto' }
+}
+
 # ---- video sem foto: frame do video vira a capa do card
 $frames = @()
 foreach ($id in @($midia.Keys)) {
