@@ -15,7 +15,9 @@ for (const c of categorias) {
 }
 
 const app = document.getElementById('app');
-const eagerRestante = { n: 4 }; // primeiras fotos da 1ª categoria sem lazy
+// No celular a 1ª categoria já fica abaixo da dobra (cabeçalho + Best BBQ
+// ocupam a tela): tudo lazy, para não disputar banda com as fotos visíveis.
+const eagerRestante = { n: 0 };
 
 montar(app, html`
   ${cabecalho(restaurante)}
@@ -27,7 +29,7 @@ montar(app, html`
 
 // ao fechar o modal, o feed volta a dar preview no card centralizado
 iniciarModal(document.getElementById('modal-video'), {
-  aoFechar: (video) => { preview.devolver(video); setTimeout(preview.atualizar, 250); },
+  aoFechar: (video) => { preview.devolver(video); preview.agendar(); },
 });
 ativarScrollSpy(app.querySelector('.nav'), categorias);
 preview.iniciarPreviewFeed(app, porId);
@@ -49,6 +51,9 @@ app.addEventListener('pointerdown', (e) => {
   const alvo = e.target.closest('[data-video]');
   if (!alvo) return;
   const item = porId.get(alvo.dataset.video);
-  if (item && !preview.tem(item.id)) preaquecer(item);
+  if (item && !preview.tem(item.id)) {
+    preview.pararTodos(); // libera a banda para o vídeo que a pessoa quer ver
+    preaquecer(item);
+  }
 }, { passive: true });
 app.addEventListener('pointercancel', cancelarPreaquecimento, { passive: true });

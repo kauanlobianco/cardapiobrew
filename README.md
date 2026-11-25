@@ -108,23 +108,24 @@ para ter **QR Code só da carta de vinhos**:
 ## Preview automático no feed (estilo YouTube)
 
 `js/componentes/previewFeed.js`. Quando a rolagem para e o usuário permanece
-~0,6 s, a **linha** de cards com vídeo mais próxima do centro da tela (os 2
-lado a lado no celular) ganha `<video>`s mudos em loop por cima das fotos.
-Tocar num deles abre o modal **com o mesmo vídeo**, sem novo download, e os
-outros previews param enquanto o modal está aberto.
+**~2,5 s** no mesmo lugar, o card com vídeo mais próximo do centro da tela ganha
+um `<video>` mudo em loop por cima da foto. Tocar nele abre o modal **com o
+mesmo vídeo**, sem novo download.
 
-- Só a linha em foco tem vídeo; ao trocar de linha os anteriores são pausados,
-  têm o `src` removido e saem do DOM antes de os novos começarem a baixar.
-  Quem continua na linha em foco não é reiniciado.
+A prioridade é de quem quer tocar e ver o vídeo, então o preview é discreto:
+
+- Nada roda antes de a página terminar de carregar (+3 s): as fotos da tela
+  inicial não disputam banda com vídeo.
+- Um preview por vez. Ao tocar em qualquer card, os previews param na hora e
+  a banda vai toda para o vídeo que vai abrir.
 - Só cards com ≥ 60% de área visível concorrem. Um IntersectionObserver
   derruba o preview no instante em que o card sai da tela.
-- Nada toca durante a rolagem — só quando ela para (`scrollend`, com
-  fallback de 180 ms para navegadores sem o evento).
-- Desligado automaticamente com "economia de dados" ligada, em 2G, com
+- Nada toca durante a rolagem — só quando ela para.
+- Desligado automaticamente com "economia de dados" ligada, em 2G/3G, com
   `prefers-reduced-motion`, e pausado quando a aba sai de foco.
 
-Custo: um vídeo (~700 KB) por card da linha em foco a cada parada de rolagem
-(constantes `PERMANENCIA_MS`, `MAXIMO_POR_LINHA` no topo do arquivo). Se quiser
+Custo: um vídeo (~700 KB) a cada parada longa de rolagem
+(constantes `PERMANENCIA_MS`, `INICIO_MS`, `MAXIMO_POR_LINHA` no topo do arquivo). Se quiser
 desligar o recurso, remova a linha `preview.iniciarPreviewFeed(app, porId)` em
 `main.js` — o modal por toque continua funcionando.
 

@@ -7,6 +7,6 @@ export function destaques(bloco, porId) {
   if (!itens.length) return '';
   return html`<section class="destaques" aria-label="${bloco.titulo}">
     <header><h2 class="rotulo ouro">${bloco.titulo}</h2></header>
-    <div class="faixa">${itens.map((i, n) => cartao(i, { eager: n < 2 }))}</div>
+    <div class="faixa">${itens.map((i, n) => cartao(i, { eager: n === 0 }) /* só o 1º está na tela */)}</div>
   </section>`;
 }

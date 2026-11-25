@@ -1,16 +1,22 @@
 import { configurarVideo } from './modalVideo.js';
 
 // Preview automático no feed, no estilo do app do YouTube: quando a rolagem
-// para (e o usuário permanece ~0,6 s), a LINHA de cards com vídeo mais próxima
-// do centro da tela ganha <video>s mudos em loop por cima das fotos — no
-// celular são os 2 cards lado a lado. Regras de economia:
+// para e o usuário permanece ~2,5 s no mesmo lugar, o card com vídeo mais
+// próximo do centro da tela ganha um <video> mudo em loop por cima da foto.
+// Prioridade é de quem quer TOCAR e ver o vídeo, então o preview é discreto:
+//   - nada roda antes de a página terminar de carregar (+ alguns segundos):
+//     as fotos acima da dobra não disputam banda com vídeo;
+//   - um preview por vez;
+//   - ao tocar num card, os previews param na hora e a banda vai toda para
+//     o vídeo que vai abrir (ver main.js);
+// Regras de economia:
 //   - só a linha em foco tem vídeo; ao trocar de linha, os anteriores são
 //     pausados e esvaziados (src removido) antes de os novos começarem a baixar;
 //     quem continua na linha em foco não é reiniciado;
 //   - só cards com >= 60% de área visível concorrem;
 //   - o IntersectionObserver derruba o preview no instante em que o card sai
 //     da tela (sem esperar a rolagem parar);
-//   - desligado se o usuário pediu economia de dados, está em 2G ou prefere
+//   - desligado se o usuário pediu economia de dados, está em 2G/3G ou prefere
 //     menos movimento; pausa quando a aba sai de foco.
 //
 // iOS/WebKit: os <video> vêm de um POOL fixo e são reutilizados. No primeiro
@@ -24,12 +30,14 @@ import { configurarVideo } from './modalVideo.js';
 // rolagem (~70 elementos, uma vez por parada) — determinística e barata.
 
 const LIMIAR_VISIVEL = 0.6;
-const PERMANENCIA_MS = 600;     // quanto tempo parado antes de começar o preview
+const PERMANENCIA_MS = 2500;    // quanto tempo parado antes de começar o preview
+const INICIO_MS = 3000;         // espera extra depois do `load` da página antes do 1º preview
 const MESMA_LINHA_PX = 12;      // cards cujo centro difere menos que isso estão na mesma linha
-const MAXIMO_POR_LINHA = 4;     // 2 no celular, 3-4 em tablet/desktop
+const MAXIMO_POR_LINHA = 1;     // um vídeo de preview por vez (o card mais ao centro)
 
 let porId, candidatos = [], atuais = []; // atuais = [{ id, botao, video }]
 let observador, timer;
+let pronto = false;             // página carregada e período inicial cumprido
 let bloqueado = false;          // o navegador recusou autoplay
 let destravado = false;         // já houve um gesto do usuário para destravar o pool
 
@@ -70,7 +78,7 @@ function destravarPool() {
 function motivoDesligado() {
   const c = navigator.connection;
   if (c && c.saveData) return 'economia de dados ligada no aparelho';
-  if (c && c.effectiveType && /2g/.test(c.effectiveType)) return 'conexão ' + c.effectiveType;
+  if (c && c.effectiveType && /2g|3g/.test(c.effectiveType)) return 'conexão ' + c.effectiveType;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return '"reduzir movimento" ligado no aparelho';
   if (bloqueado) return destravado
     ? 'navegador recusou autoplay mesmo após toque (modo de baixa energia?)'
@@ -94,7 +102,7 @@ function diag(texto) {
 }
 
 function destruir(p) { esvaziar(p.video); }
-export function pararTodos() { atuais.forEach(destruir); atuais = []; }
+export function pararTodos() { clearTimeout(timer); atuais.forEach(destruir); atuais = []; }
 
 function iniciar(botao) {
   const item = porId.get(botao.dataset.video);
@@ -149,6 +157,7 @@ function escolherLinha() {
 export function atualizar() {
   const motivo = motivoDesligado() || (document.hidden && 'aba em segundo plano') || (document.querySelector('dialog[open]') && 'modal aberto');
   if (motivo) { diag(motivo); return; }
+  if (!pronto) { diag('aguardando a página terminar de carregar'); return; }
   const linha = escolherLinha();
   if (!linha.length) { pararTodos(); diag('nenhum card com vídeo ≥60% visível'); return; }
   diag('tocando ' + linha.map((b) => b.dataset.video).join(' + '));
@@ -159,8 +168,9 @@ export function atualizar() {
   for (const b of linha) if (!atuais.some((p) => p.botao === b)) iniciar(b);
 }
 
-function agendar() {
+export function agendar() {
   clearTimeout(timer);
+  if (!pronto) return;
   timer = setTimeout(atualizar, PERMANENCIA_MS);
 }
 
@@ -218,6 +228,8 @@ export function iniciarPreviewFeed(raiz, indice) {
     document.addEventListener(ev, destravarPool, { capture: true, passive: true, once: true });
   }
 
-  // primeiro foco depois que a página assentou (fontes/imagens acima da dobra)
-  setTimeout(atualizar, 900);
+  // primeiro preview só depois que a página terminou de carregar (fotos acima
+  // da dobra, fontes) e mais INICIO_MS — e ainda respeitando a permanência
+  const liberar = () => setTimeout(() => { pronto = true; agendar(); }, INICIO_MS);
+  if (document.readyState === 'complete') liberar(); else addEventListener('load', liberar, { once: true });
 }
